@@ -3,10 +3,12 @@
 @use "sass:map";
 @use './themes/stone-gray_theme-colors.scss' as stoneGrayTheme;
 @use './themes/casbah-rock_theme-colors.scss' as casbahRockTheme;
+@use './themes/forest-green_theme-colors.scss' as forestGreenTheme;
 
 $all-themes: (
   "stoneGray": stoneGrayTheme.$palettes,
   "casbahRock": casbahRockTheme.$palettes,
+  "forestGreen": forestGreenTheme.$palettes,
   // "another": anotherTheme.$colors // Add other themes here
 );
 
@@ -145,6 +147,28 @@ html[data-theme='casbahRock'] {
     @include define-mode-variables(dark, "casbahRock");
     @include material.theme((color: (primary: casbahRockTheme.$primary-palette,
           tertiary: casbahRockTheme.$tertiary-palette,
+          theme-type: dark,
+        ),
+        density: 0,
+      ));
+  }
+}
+
+html[data-theme='forestGreen'] {
+  &[data-mode='light'] {
+    @include define-mode-variables(light, "forestGreen");
+    @include material.theme((color: (primary: forestGreenTheme.$primary-palette,
+          tertiary: forestGreenTheme.$tertiary-palette,
+          theme-type: light,
+        ),
+        density: 0,
+      ));
+  }
+
+  &[data-mode='dark'] {
+    @include define-mode-variables(dark, "forestGreen");
+    @include material.theme((color: (primary: forestGreenTheme.$primary-palette,
+          tertiary: forestGreenTheme.$tertiary-palette,
           theme-type: dark,
         ),
         density: 0,

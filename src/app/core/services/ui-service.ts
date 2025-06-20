@@ -3,7 +3,7 @@ import { MediaMatcher } from '@angular/cdk/layout';
 import { isPlatformBrowser } from '@angular/common';
 
 export type ModePreference = 'light' | 'dark' | 'system';
-export type ThemeName = 'stoneGray' | 'casbahRock';
+export type ThemeName = 'stoneGray' | 'casbahRock' | 'forestGreen';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +22,7 @@ export class UiService {
   private prefersColorSchemeChangeListener: ((this: MediaQueryList, ev: MediaQueryListEvent) => any) | undefined;
 
   private static readonly VALID_MODES = new Set<ModePreference>(['light', 'dark', 'system']);
-  private static readonly VALID_THEMES = new Set<ThemeName>(['stoneGray', 'casbahRock']);
+  private static readonly VALID_THEMES = new Set<ThemeName>(['stoneGray', 'casbahRock', 'forestGreen']);
   private static readonly THEME_STORAGE_KEY = 'appTheme';
   private static readonly MODE_STORAGE_KEY = 'appMode';
 
@@ -91,7 +91,7 @@ export class UiService {
 
   public toggleTheme(): void {
     const currentTheme = this._activeTheme();
-    const cycle: ThemeName[] = ['stoneGray', 'casbahRock'];
+    const cycle: ThemeName[] = ['stoneGray', 'casbahRock', 'forestGreen'];
     const currentIndex = cycle.indexOf(currentTheme);
     const nextTheme = cycle[(currentIndex + 1) % cycle.length];
     this.activateTheme(nextTheme);
