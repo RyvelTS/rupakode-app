@@ -1,1 +1,349 @@
-/* You can add global styles to this file, and also import other style files */
+@use 'tailwindcss';
+@use '@angular/material' as material;
+@use "sass:map";
+@use './themes/stone-gray_theme-colors.scss' as stoneGrayTheme;
+
+$all-themes: (
+  "stoneGray": stoneGrayTheme.$palettes,
+  // "another": anotherTheme.$colors // Add other themes here
+);
+
+@function get-theme-color($theme-name, $color-name, $shade: 500) {
+  @if not map.has-key($all-themes, $theme-name) {
+    @warn "Theme `#{$theme-name}` not found in $all-themes map.";
+    @return null;
+  }
+
+  $current-theme-colors: map.get($all-themes, $theme-name);
+
+  @if map.has-key($current-theme-colors, $color-name) and map.has-key(map.get($current-theme-colors, $color-name), $shade) {
+    @return map.get(map.get($current-theme-colors, $color-name), $shade);
+  }
+
+  @warn "Color `#{$color-name}` with shade `#{$shade}` not found in theme `#{$theme-name}`.";
+  @return null;
+}
+
+@function get-theme-pallete($theme-name, $color-name) {
+  @if not map.has-key($all-themes, $theme-name) {
+    @warn "Theme `#{$theme-name}` not found in $all-themes map.";
+    @return null;
+  }
+
+  $current-theme-colors: map.get($all-themes, $theme-name);
+
+  @if map.has-key($current-theme-colors, $color-name) {
+    @return map.has-key($current-theme-colors, $color-name);
+  }
+
+  @warn "Color `#{$color-name}` not found in theme `#{$theme-name}`.";
+  @return null
+}
+
+@mixin define-mode-variables($mode, $theme-name) {
+  @if $mode ==light {
+    // SURFACE COLOR
+    --color-surface-primary: #{get-theme-color($theme-name, "neutral", 99)};
+    --color-surface-secondary: #{get-theme-color($theme-name, "neutral", 95)};
+    --color-surface-tertiary: #{get-theme-color($theme-name, "neutral", 50)};
+    --color-surface-inverse: #{get-theme-color($theme-name, "neutral", 10)};
+
+    // BRAND/MAIN COLOR
+    --color-brand-primary: #{get-theme-color($theme-name, "primary", 25)};
+    --color-brand-secondary: #{get-theme-color($theme-name, "primary", 50)};
+    --color-brand-accent: #{get-theme-color($theme-name, "tertiary", 70)};
+    --color-brand-primary-inverse: #{get-theme-color($theme-name, "primary", 80)};
+    --color-brand-secondary-inverse: #{get-theme-color($theme-name, "primary", 50)};
+    --color-brand-accent-inverse: #{get-theme-color($theme-name, "tertiary", 70)};
+
+    // TYPOGRAPHY COLOR
+    --color-typography-primary: #{get-theme-color($theme-name, "neutral", 10)};
+    --color-typography-secondary: #{get-theme-color($theme-name, "neutral", 50)};
+    --color-typography-tertiary: #{get-theme-color($theme-name, "neutral", 70)};
+    --color-typography-primary-inverse: #{get-theme-color($theme-name, "neutral", 95)};
+    --color-typography-secondary-inverse: #{get-theme-color($theme-name, "neutral", 60)};
+    --color-typography-tertiary-inverse: #{get-theme-color($theme-name, "neutral", 40)};
+
+    --shadow-outer: 0 6px 12px rgb(0 0 0 / 0.05);
+  }
+
+  @else if $mode ==dark {
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: #ffffff;
+      transition: background-color 5000s ease-in-out 0s;
+      box-shadow: inset 0 0 20px 20px #23232329;
+    }
+
+    // SURFACE COLOR
+    --color-surface-primary: #{get-theme-color($theme-name, "neutral-variant", 10)};
+    --color-surface-secondary: #{get-theme-color($theme-name, "neutral", 20)};
+    --color-surface-tertiary: #{get-theme-color($theme-name, "neutral", 50)};
+    --color-surface-inverse: #{get-theme-color($theme-name, "neutral", 99)};
+
+    // BRAND/MAIN COLOR
+    --color-brand-primary: #{get-theme-color($theme-name, "primary", 80)};
+    --color-brand-secondary: #{get-theme-color($theme-name, "primary", 50)};
+    --color-brand-accent: #{get-theme-color($theme-name, "tertiary", 70)};
+    --color-brand-primary-inverse: #{get-theme-color($theme-name, "primary", 35)};
+    --color-brand-secondary-inverse: #{get-theme-color($theme-name, "primary", 50)};
+    --color-brand-accent-inverse: #{get-theme-color($theme-name, "tertiary", 70)};
+
+    // TYPOGRAPHY COLOR
+    --color-typography-primary: #{get-theme-color($theme-name, "neutral", 95)};
+    --color-typography-secondary: #{get-theme-color($theme-name, "neutral", 60)};
+    --color-typography-tertiary: #{get-theme-color($theme-name, "neutral", 40)};
+    --color-typography-primary-inverse: #{get-theme-color($theme-name, "neutral", 10)};
+    --color-typography-secondary-inverse: #{get-theme-color($theme-name, "neutral", 40)};
+    --color-typography-tertiary-inverse: #{get-theme-color($theme-name, "neutral", 60)};
+
+    --shadow-outer: 0 6px 12px rgba(0, 0, 0, 0.05);
+  }
+}
+
+html[data-theme='stoneGray'] {
+  &[data-mode='light'] {
+    @include define-mode-variables(light, "stoneGray");
+    @include material.theme((color: (primary: stoneGrayTheme.$primary-palette,
+          tertiary: stoneGrayTheme.$tertiary-palette,
+          theme-type: light,
+        ),
+        density: 0,
+      ));
+  }
+
+  &[data-mode='dark'] {
+    @include define-mode-variables(dark, "stoneGray");
+    @include material.theme((color: (primary: stoneGrayTheme.$primary-palette,
+          tertiary: stoneGrayTheme.$tertiary-palette,
+          theme-type: dark,
+        ),
+        density: 0,
+      ));
+  }
+}
+
+// TAILWIND 4 CUSTOM CLASS DECLARATION
+@theme {
+  // SURFACE COLOR
+  --color-surface-primary: var(--color-surface-primary);
+  --color-surface-secondary: var(--color-surface-secondary);
+  --color-surface-tertiary: var(--color-surface-tertiary);
+  --color-surface-inverse: var(--color-surface-inverse);
+
+  // BRAND/MAIN COLOR
+  --color-brand-primary: var(--color-brand-primary);
+  --color-brand-secondary: var(--color-brand-secondary);
+  --color-brand-accent: var(--color-brand-accent);
+  --color-brand-primary-inverse: var(--color-brand-primary-inverse);
+  --color-brand-secondary-inverse: var(--color-brand-secondary-inverse);
+  --color-brand-accent-inverse: var(--color-brand-accent-inverse);
+
+  // TYPOGRAPHY COLOR
+  --color-typography-primary: var(--color-typography-primary);
+  --color-typography-secondary: var(--color-typography-secondary);
+  --color-typography-tertiary: var(--color-typography-tertiary);
+  --color-typography-primary-inverse: var(--color-typography-primary-inverse);
+  --color-typography-secondary-inverse: var(--color-typography-secondary-inverse);
+  --color-typography-tertiary-inverse: var(--color-typography-tertiary-inverse);
+
+  --shadow-outer: var(--shadow-outer)
+}
+
+@layer base {
+
+  html,
+  body {
+    @apply bg-surface-primary text-typography-primary;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold leading-tight;
+  }
+
+  h1 {
+    @apply text-5xl md:text-6xl text-brand-primary font-extrabold mb-1;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl text-brand-secondary mb-1;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl text-typography-primary mb-1;
+  }
+
+  h4 {
+    @apply text-lg md:text-xl text-typography-primary mb-1;
+  }
+
+  h5 {
+    @apply md:text-lg text-typography-secondary mb-1;
+  }
+
+  h6 {
+    @apply text-typography-secondary mb-1 font-semibold;
+  }
+
+  p {
+    @apply text-typography-primary max-w-[65ch];
+  }
+
+  a {
+    @apply text-brand-accent font-medium underline-offset-4;
+    text-decoration: none;
+    transition: all 0.2s ease-in-out;
+
+    &:hover,
+    &:focus {
+      @apply underline text-brand-primary;
+    }
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Lists (Unordered & Ordered)
+   *
+   * Standardized styling for lists with proper indentation and spacing.
+   * ---------------------------------------------------------------------------
+   */
+  ul,
+  ol {
+    @apply mb-4 pl-5;
+    max-width: 65ch;
+
+    li {
+      @apply mb-2;
+    }
+  }
+
+  ul {
+    list-style-type: disc;
+  }
+
+  ol {
+    list-style-type: decimal;
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Text-level Semantics
+   * ---------------------------------------------------------------------------
+   */
+  // Bold & Strong
+  strong,
+  b {
+    @apply font-bold text-typography-primary;
+  }
+
+  // Italic & Emphasis
+  em,
+  i {
+    @apply italic;
+  }
+
+  // Underline
+  u {
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  // Small text
+  small {
+    @apply text-sm text-typography-tertiary;
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Blockquotes
+   *
+   * Visually offset quoted text from the main content flow.
+   * ---------------------------------------------------------------------------
+   */
+  blockquote {
+    @apply italic text-typography-secondary my-6 pl-4;
+    border-left: 4px solid var(--color-brand-secondary);
+
+    p {
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Code Blocks & Inline Code
+   *
+   * Monospaced font for code snippets, with distinct styling for inline vs.
+   * block-level code for clarity.
+   * ---------------------------------------------------------------------------
+   */
+
+  code {
+    @apply bg-surface-secondary text-typography-secondary text-sm font-mono rounded-md py-0.5 px-1.5;
+  }
+
+  pre {
+    @apply bg-surface-tertiary rounded-lg p-4 my-6 text-sm overflow-x-auto;
+    max-width: 100%;
+
+    code {
+      @apply bg-transparent text-typography-tertiary p-0 rounded-none;
+      font-size: inherit;
+    }
+  }
+
+  /**
+   * ---------------------------------------------------------------------------
+   * Horizontal Rule
+   *
+   * A subtle separator.
+   * ---------------------------------------------------------------------------
+   */
+  hr {
+    border-top: 1px solid var(--color-surface-tertiary);
+    @apply my-8;
+  }
+}
+
+
+@layer components {
+  .card {
+    @apply p-8 rounded-xl bg-linear-to-b from-brand-primary/3
+  }
+
+  .btn-primary {
+    @apply px-5 py-2 bg-brand-primary text-typography-primary-inverse font-bold hover:bg-brand-secondary/50 active:scale-90 rounded-md text-lg transition-all duration-150 cursor-pointer
+  }
+
+  .btn-primary-inverse {
+    @apply px-5 py-2 text-brand-primary bg-typography-primary-inverse font-bold hover:bg-brand-secondary hover:text-typography-primary-inverse active:scale-90 rounded-md text-lg transition-all duration-150 cursor-pointer
+  }
+}
+
+.mdc-notched-outline__notch {
+  border-right: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
