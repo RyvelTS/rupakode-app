@@ -3,7 +3,7 @@ import { MediaMatcher } from '@angular/cdk/layout';
 import { isPlatformBrowser } from '@angular/common';
 
 export type ModePreference = 'light' | 'dark' | 'system';
-export type ThemeName = 'stoneGray';
+export type ThemeName = 'stoneGray' | 'casbahRock';
 
 @Injectable({
   providedIn: 'root'
@@ -15,13 +15,14 @@ export class UiService {
 
   private _activeMode = signal<Exclude<ModePreference, 'system'>>('light');
   private _activeTheme = signal<ThemeName>('stoneGray');
+  public readonly activeTheme = this._activeTheme.asReadonly();
   private _activePreference = signal<ModePreference>('system');
   public readonly activePreference = this._activePreference.asReadonly();
 
   private prefersColorSchemeChangeListener: ((this: MediaQueryList, ev: MediaQueryListEvent) => any) | undefined;
 
   private static readonly VALID_MODES = new Set<ModePreference>(['light', 'dark', 'system']);
-  private static readonly VALID_THEMES = new Set<ThemeName>(['stoneGray']);
+  private static readonly VALID_THEMES = new Set<ThemeName>(['stoneGray', 'casbahRock']);
   private static readonly THEME_STORAGE_KEY = 'appTheme';
   private static readonly MODE_STORAGE_KEY = 'appMode';
 
@@ -86,6 +87,14 @@ export class UiService {
     const currentIndex = cycle.indexOf(currentPreference);
     const nextPreference = cycle[(currentIndex + 1) % cycle.length];
     this.activateMode(nextPreference);
+  }
+
+  public toggleTheme(): void {
+    const currentTheme = this._activeTheme();
+    const cycle: ThemeName[] = ['stoneGray', 'casbahRock'];
+    const currentIndex = cycle.indexOf(currentTheme);
+    const nextTheme = cycle[(currentIndex + 1) % cycle.length];
+    this.activateTheme(nextTheme);
   }
 
   private storeThemePreference(theme: ThemeName): void {

@@ -19,4 +19,8 @@ export class NavigationBar {
     this.uiService.toggleMode();
   }
 
+  toggleTheme() {
+    this.uiService.toggleTheme();
+  }
+
 }

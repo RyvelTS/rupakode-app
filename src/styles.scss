@@ -2,9 +2,11 @@
 @use '@angular/material' as material;
 @use "sass:map";
 @use './themes/stone-gray_theme-colors.scss' as stoneGrayTheme;
+@use './themes/casbah-rock_theme-colors.scss' as casbahRockTheme;
 
 $all-themes: (
   "stoneGray": stoneGrayTheme.$palettes,
+  "casbahRock": casbahRockTheme.$palettes,
   // "another": anotherTheme.$colors // Add other themes here
 );
 
@@ -121,6 +123,28 @@ html[data-theme='stoneGray'] {
     @include define-mode-variables(dark, "stoneGray");
     @include material.theme((color: (primary: stoneGrayTheme.$primary-palette,
           tertiary: stoneGrayTheme.$tertiary-palette,
+          theme-type: dark,
+        ),
+        density: 0,
+      ));
+  }
+}
+
+html[data-theme='casbahRock'] {
+  &[data-mode='light'] {
+    @include define-mode-variables(light, "casbahRock");
+    @include material.theme((color: (primary: casbahRockTheme.$primary-palette,
+          tertiary: casbahRockTheme.$tertiary-palette,
+          theme-type: light,
+        ),
+        density: 0,
+      ));
+  }
+
+  &[data-mode='dark'] {
+    @include define-mode-variables(dark, "casbahRock");
+    @include material.theme((color: (primary: casbahRockTheme.$primary-palette,
+          tertiary: casbahRockTheme.$tertiary-palette,
           theme-type: dark,
         ),
         density: 0,
