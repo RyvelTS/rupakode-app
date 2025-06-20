@@ -1,0 +1,168 @@
+<div class="container mx-auto px-4 py-12 font-inter">
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-4 text-center text-typography-primary">
+        Pembuat Pesan Commit <a target="_blank" class="font-bold"
+            href="https://www.conventionalcommits.org/id/v1.0.0/">Konvensional</a>
+    </h1>
+    <p class="text-center text-xl mb-12 text-typography-secondary max-w-3xl mx-auto">
+        Hasilkan pesan commit standar yang rapi dan konsisten dengan mudah. Cukup isi detail perubahan Anda dan salin
+        pesan yang dihasilkan!
+    </p>
+
+    @if (message()) {
+    <div #messageBox [class.show]="message()" [class.error]="message()?.type === 'error'"
+        [class.success]="message()?.type === 'success'" class="card message-box mb-8 p-4 md:p-6">
+        <p class="text-lg text-center max-w-full">{{ message()?.text }}</p>
+    </div>
+    }
+
+    <div class="mb-4 grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+        <div class="lg:col-span-1 card">
+            <h2 class="text-2xl font-bold mb-6 text-typography-primary">Pengaturan Pesan Commit</h2>
+
+            <mat-form-field appearance="outline" class="w-full mb-8">
+                <mat-label>Tipe <span class="text-red-500">*</span></mat-label>
+                <mat-select [ngModel]="type()" (ngModelChange)="type.set($event)">
+                    <mat-option value="feat">feat (Fitur baru)</mat-option>
+                    <mat-option value="fix">fix (Perbaikan bug)</mat-option>
+                    <mat-option value="docs">docs (Perubahan dokumentasi)</mat-option>
+                    <mat-option value="chore">chore (Tugas rutin/pemeliharaan)</mat-option>
+                    <mat-option value="refactor">refactor (Refactoring kode)</mat-option>
+                    <mat-option value="perf">perf (Peningkatan kinerja)</mat-option>
+                    <mat-option value="test">test (Penambahan/refactoring tes)</mat-option>
+                    <mat-option value="build">build (Perubahan sistem build/dependensi)</mat-option>
+                    <mat-option value="ci">ci (Perubahan konfigurasi CI)</mat-option>
+                    <mat-option value="style">style (Gaya/pemformatan kode)</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full mb-8">
+                <mat-label>Cakupan (Opsional)</mat-label>
+                <input matInput type="text" [ngModel]="scope()" (ngModelChange)="scope.set($event)"
+                    placeholder="contoh: parser, auth, UI">
+                <mat-hint align="start">Kata benda yang menjelaskan bagian dari basis kode.</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full mb-8">
+                <mat-label>Deskripsi <span class="text-red-500">*</span></mat-label>
+                <input matInput type="text" [ngModel]="description()" (ngModelChange)="description.set($event)"
+                    placeholder="contoh: tambahkan kemampuan untuk mengurai array" maxlength="70">
+                <mat-hint align="start">Ringkasan singkat dan padat dari perubahan kode (disarankan maks 70
+                    karakter).</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full mb-8">
+                <mat-label>Isi Pesan (Opsional)</mat-label>
+                <textarea matInput rows="5" [ngModel]="body()" (ngModelChange)="body.set($event)"
+                    placeholder="Berikan informasi kontekstual tambahan tentang perubahan kode."></textarea>
+            </mat-form-field>
+        </div>
+
+        <div class="lg:col-span-2 card lg:top-8 self-start">
+            <h2 class="text-2xl font-bold mb-6 text-typography-primary">Pratinjau Pesan Commit</h2>
+            <pre id="commitMessagePreview"
+                class="preview-area  p-4 rounded-md text-sm overflow-auto max-h-96 leading-relaxed mb-8">{{ commitMessagePreview() }}</pre>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                <button mat-raised-button color="primary" (click)="copyToClipboard()"
+                    class="btn-primary w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-6 rounded-md shadow-outer transition-all duration-200">
+                    <mat-icon>content_copy</mat-icon>
+                    Salin ke Papan Klip
+                </button>
+                <button mat-raised-button color="accent" (click)="clearForm()"
+                    class="btn-secondary w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-6 rounded-md shadow-outer transition-all duration-200">
+                    <mat-icon>clear</mat-icon>
+                    Bersihkan Formulir
+                </button>
+                <button mat-raised-button color="primary" (click)="saveCommitMessage()"
+                    class="btn-primary w-full sm:w-auto flex items-center justify-center gap-2 py-3 px-6 rounded-md shadow-outer transition-all duration-200">
+                    <mat-icon>save</mat-icon>
+                    Simpan Pesan Commit
+                </button>
+            </div>
+
+            <div class="form-group p-4 border rounded-lg mb-8">
+                <mat-checkbox [ngModel]="isBreakingChange()" (ngModelChange)="isBreakingChange.set($event)"
+                    color="primary" class="mb-3">
+                    Apakah ini PERUBAHAN YANG MERUSAK (BREAKING CHANGE)?
+                </mat-checkbox>
+
+                @if (isBreakingChange()) {
+                <div class="p-4 bg-surface-secondary/30 rounded-lg shadow-sm mt-3">
+                    <p class="font-medium text-brand-primary mb-2">Cara menunjukkan perubahan yang merusak:</p>
+                    <mat-radio-group [ngModel]="breakingChangeIndicator()"
+                        (ngModelChange)="breakingChangeIndicator.set($event)" class="flex flex-col space-y-2">
+                        <mat-radio-button value="bang">Tambahkan <code>!</code> setelah tipe/cakupan (contoh:
+                            <code>feat(api)!:</code>)</mat-radio-button>
+                        <mat-radio-button value="footer">Tambahkan footer <code>BREAKING CHANGE:</code>
+                        </mat-radio-button>
+                    </mat-radio-group>
+
+                    @if (breakingChangeIndicator() === 'footer') {
+                    <div class="mt-4">
+                        <mat-form-field appearance="outline" class="w-full">
+                            <mat-label>Deskripsi Perubahan yang Merusak:</mat-label>
+                            <textarea matInput rows="3" [ngModel]="breakingChangeDescription()"
+                                (ngModelChange)="breakingChangeDescription.set($event)"
+                                placeholder="Jelaskan perubahan API yang merusak, contoh: 'variabel lingkungan sekarang lebih diutamakan daripada file konfigurasi.'"></textarea>
+                        </mat-form-field>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+
+            <div class="form-group p-4 border rounded-lg">
+                <label class="block text-lg font-medium mb-3">Footer Tambahan (Opsional)</label>
+                <div id="footersContainer" class="space-y-4">
+                    @for (footer of footers(); track footer.id) {
+                    <div class="footer-item flex items-center gap-5">
+                        <mat-form-field appearance="outline" class="w-full">
+                            <input matInput type="text" [ngModel]="footer.token"
+                                (ngModelChange)="updateFooterToken(footer.id, $event)"
+                                placeholder="Token (contoh: Refs, Co-authored-by)">
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="w-full">
+                            <input matInput type="text" [ngModel]="footer.value"
+                                (ngModelChange)="updateFooterValue(footer.id, $event)"
+                                placeholder="Nilai (contoh: #123, Nama <email@example.com>)">
+                        </mat-form-field>
+                        <button mat-icon-button color="warn" (click)="removeFooter(footer.id)" class="mb-5">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                    }
+                </div>
+                <button color="primary" (click)="addFooter()"
+                    class="btn-primary w-full mt-5 flex items-center justify-center gap-2 py-2 px-4 rounded-md border text-sm">
+                    <mat-icon class="scale-75">add</mat-icon>
+                    Tambah Footer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="card p-6">
+        <h2 class="text-2xl font-bold mb-6 text-typography-primary">Pesan Commit Tersimpan</h2>
+        @if (savedCommitMessages().length === 0) {
+        <p class="text-center text-typography-secondary">Belum ada pesan commit yang tersimpan.</p>
+        } @else {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @for (savedMessage of savedCommitMessages(); track savedMessage.id) {
+            <div class="saved-message-card rounded-lg p-4 shadow-outer flex flex-col justify-between">
+                <pre class="whitespace-pre-wrap text-sm font-mono mb-4 flex-grow">{{ savedMessage.message }}</pre>
+                <div class="flex gap-2 justify-end">
+                    <button mat-stroked-button color="primary" (click)="loadCommitMessage(savedMessage.id)">
+                        <mat-icon>edit</mat-icon>
+                        Muat
+                    </button>
+                    <button mat-stroked-button color="warn" (click)="removeSavedCommitMessage(savedMessage.id)">
+                        <mat-icon>delete</mat-icon>
+                        Hapus
+                    </button>
+                </div>
+            </div>
+            }
+        </div>
+        }
+    </div>
+</div>

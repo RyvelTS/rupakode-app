@@ -1,0 +1,18 @@
+<div>
+    <header class="p-3 border-b sticky top-0 bg-surface-primary/80 backdrop-blur-md z-10">
+        <app-navigation-bar [applicationName]="APP_NAME"></app-navigation-bar>
+    </header>
+
+    <main>
+        <router-outlet />
+    </main>
+
+    <footer class="py-10 px-4 text-typography-tertiary-inverse text-center">
+        <div class="container mx-auto">
+            <p class="max-w-full">&copy; {{currentYear}} {{APP_NAME}}. Dibuat oleh <a
+                    href="https://www.linkedin.com/in/ryvel-stamber/">RYVEL TIMOTHY</a> dengan
+                ❤️ untuk Para Developer.</p>
+            <p class="max-w-full text-sm text-typography-tertiary">Gratis, Tanpa Login, Tanpa Iklan.</p>
+        </div>
+    </footer>
+</div>

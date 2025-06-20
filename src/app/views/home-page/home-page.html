@@ -1,0 +1,191 @@
+<section class="container mx-auto px-4 py-20 text-center">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-5xl md:text-6xl font-extrabold mb-4 leading-tight text-typography-secondary">
+            {{appName}} <span class="text-brand-primary">Merapikan Warna dan Riwayat Pesan Kode Anda</span>
+        </h1>
+        <p class="text-xl md:text-2xl mb-8 text-typography-secondary">
+            Alat bantu produktivitas web-based untuk developer: generate palet warna UI dan pesan commit Git yang
+            konsisten.
+        </p>
+        <div class="flex flex-col md:flex-row justify-center gap-8">
+            <a [routerLink]="['/color-palette']" class="btn-primary no-underline">
+                Mulai Buat Palet Warna
+            </a>
+            <a [routerLink]="['/git-message']" class="btn-primary no-underline">
+                Mulai Coba Membuat Pesan Git yang Benar
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="bg-surface-secondary/30 py-20 px-4">
+    <div class="container mx-auto">
+        <h2 class="text-center text-4xl font-bold text-typography-primary">Mengapa {{appName}} Hadir?</h2>
+        <p class="mb-10 max-w-full text-lg text-center text-typography-primary font-medium">
+            {{appName}} hadir sebagai solusi terpadu, menyatukan dua kebutuhan krusial developer dalam satu platform
+            ringan dan intuitif.
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="card">
+                <div class="mb-5 icon-container bg-surface-tertiary text-typography-primary-inverse">
+                    <mat-icon>palette</mat-icon>
+                </div>
+                <h3 class="text-2xl font-semibold mb-4 text-typography-primary">Tantangan Kombinasi Warna UI</h3>
+                <p class="text-typography-secondary">
+                    Sulit menemukan palet warna yang harmonis dan konsisten untuk desain UI/UX? Sering bolak-balik
+                    mencari referensi di berbagai sumber? Ini menghabiskan waktu dan menurunkan efisiensi.
+                </p>
+            </div>
+
+            <div class="card">
+                <div class="mb-5 icon-container bg-surface-tertiary text-typography-primary-inverse">
+                    <mat-icon>message</mat-icon>
+                </div>
+
+                <h3 class="text-2xl font-semibold mb-4 text-typography-primary">Pesan Commit Git yang Berantakan</h3>
+                <p class="text-typography-secondary">
+                    Riwayat commit yang tidak informatif mempersulit kolaborasi tim, debugging, dan pemeliharaan kode.
+                    Konsistensi dalam penulisan pesan commit seringkali diabaikan.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="fitur" class="py-20 px-4">
+    <div class="container mx-auto">
+        <h2 class="text-center text-4xl font-bold mb-12 text-typography-primary">Fitur Utama {{appName}}</h2>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+            <div class="card">
+                <h3 class="my-12 text-3xl text-center font-semibold mb-4 text-typography-primary">Generator Palet Warna
+                    Angular Material
+                </h3>
+                <p class="max-w-full text-center text-typography-secondary mb-6 min-h-[64px]">
+                    Hasilkan palet warna yang konsisten dan siap pakai untuk desain UI/UX Anda, mengikuti standar palet
+                    Angular Material.
+                </p>
+                <ul class="text-left space-y-3 text-lg text-typography-secondary min-h-[240px]">
+                    <li class="flex items-start">
+                        <span class="text-brand-primary mr-2">✔</span>
+                        <p>Input warna dasar (hex color) untuk berbagai
+                            palet (primary, accent, warn, dll).</p>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-brand-primary mr-2">✔</span>
+                        <p>Hasilkan rentang warna dari 0 hingga 100,
+                            termasuk variasi seperti 4, 6, 12, dll.</p>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-brand-primary mr-2">✔</span>
+                        <p>Salin kode warna dalam format yang sesuai untuk
+                            Sass/CSS.</p>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-brand-primary mr-2">✔</span>
+                        <p>Lihat preview visual dari setiap gradasi warna
+                            dalam palet.</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3 class="my-12 text-center text-3xl font-semibold mb-4 text-typography-primary">Generator Pesan Commit
+                    Git
+                    Konvensional
+                </h3>
+                <p class="max-w-full text-center text-typography-secondary mb-6 min-h-[64px]">
+                    Buat pesan commit Git yang terstruktur dan informatif sesuai spesifikasi Conventional Commits 1.0.0.
+                </p>
+                <ul class="text-left space-y-3 text-lg text-typography-secondary min-h-[240px]">
+                    <li class="flex items-start">
+                        <span class="text-brand-primary mr-2">✔</span>
+                        <p> Pilih <code>type</code> commit (misal: <code>feat</code> untuk fitur baru, <code>fix</code>
+                            untuk perbaikan bug).</p>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-brand-primary mr-2">✔</span>
+                        <p>Tambahkan <code>scope</code> opsional untuk konteks (<code>feat(auth)</code>).</p>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-brand-primary mr-2">✔</span>
+                        <p>Tuliskan <code>description</code> singkat dan <code>body</code> opsional yang lebih detail.
+                        </p>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-brand-primary mr-2">✔</span>
+                        <p> Sertakan <code>footer</code> seperti <code>BREAKING CHANGE</code> untuk perubahan mayor.</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="manfaat" class="bg-surface-secondary/30 py-20 px-4">
+    <div class="container mx-auto">
+        <h2 class="text-center text-4xl font-bold mb-12 text-typography-primary">Manfaat {{appName}} untuk Anda</h2>
+        <div class="text-center grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+            <div class="flex items-start card gap-8">
+                <div class="icon-container bg-linear-to-b from-brand-primary/20">
+                    <mat-icon>alarm_on</mat-icon>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-2 text-typography-primary">Efisiensi Waktu</h3>
+                    <p class="text-typography-secondary">Hemat waktu dalam mencari kombinasi warna dan merumuskan pesan
+                        commit.</p>
+                </div>
+            </div>
+            <div class="flex items-start card gap-8">
+                <div class="icon-container bg-linear-to-b from-brand-primary/20">
+                    <mat-icon>auto_awesome</mat-icon>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-2 text-typography-primary">Kualitas Meningkat</h3>
+                    <p class="text-typography-secondary">Meningkatkan kualitas desain UI dan kejelasan riwayat kode Git.
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-start card gap-8">
+                <div class="icon-container bg-linear-to-b from-brand-primary/20">
+                    <mat-icon>interests</mat-icon>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-2 text-typography-primary">Antarmuka Intuitif</h3>
+                    <p class="text-typography-secondary">Mudah digunakan oleh siapa saja, dari pemula hingga developer
+                        berpengalaman.</p>
+                </div>
+            </div>
+            <div class="flex items-start card gap-8">
+                <div class="icon-container bg-linear-to-b from-brand-primary/20">
+                    <mat-icon>card_giftcard</mat-icon>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-2 text-typography-primary">Gratis & Open Source</h3>
+                    <p class="text-typography-secondary">Akses penuh tanpa biaya, tanpa iklan, dan bisa dikembangkan
+                        bersama komunitas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-20 px-4 text-center bg-brand-primary text-typography-inverse">
+    <div class="container mx-auto">
+        <h2 class="text-center text-typography-primary-inverse text-4xl md:text-5xl font-bold mb-6">Siap Merapikan
+            Proyek Anda?</h2>
+        <p class=" max-w-full text-center text-typography-secondary-inverse text-xl md:text-2xl mb-10">
+            {{appName}} adalah alat web-based yang Anda butuhkan untuk efisiensi desain dan manajemen kode.
+        </p>
+        <div class="flex flex-col md:flex-row justify-center gap-8">
+            <a [routerLink]="['/color-palette']" class="btn-primary-inverse no-underline">
+                Mulai Buat Palet Warna
+            </a>
+            <a [routerLink]="['/git-message']" class="btn-primary-inverse no-underline">
+                Mulai Coba Membuat Pesan Git yang Benar
+            </a>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,223 @@
+<div class="container mx-auto px-4 py-12">
+    <h1 class="text-4xl md:text-5xl font-extrabold mb-8 text-center text-typography-primary">
+        Generator Palet <span [style.color]="generatedPalette()['50']">Warna</span>
+    </h1>
+    <p class="text-center text-xl mb-12 text-typography-secondary max-w-2xl mx-auto">
+        Hasilkan palet warna yang lengkap dan konsisten mengikuti standar desain Angular Material. Cukup masukkan warna
+        dasar Anda!
+    </p>
+
+    @if (message()) {
+    <div #messageBox [class.show]="message()" [class.error]="message()?.type === 'error'"
+        class="card min-h-[6rem] mb-8">
+        <p class="text-lg text-center max-w-full">{{ message()?.text }}</p>
+    </div>
+    }
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-1 card">
+            <h2 class="text-2xl font-bold mb-6 text-typography-primary">Pengaturan Palet</h2>
+
+            <mat-form-field appearance="outline" class="w-full mb-4">
+                <mat-label>Pilih Warna Dasar</mat-label>
+                <input type="color" #baseColorInput matInput [value]="baseColorHex()"
+                    (input)="onColorInputChange($event)"
+                    class="mat-input-element h-16 w-full cursor-pointer p-0 border-none bg-transparent"
+                    title="Pilih Warna Dasar">
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="w-full mb-4">
+                <mat-label>HEX Warna Dasar</mat-label>
+                <input matInput #baseColorHexInput [ngModel]="baseColorHex()"
+                    (ngModelChange)="onHexInputChanged($event)" placeholder="#RRGGBB" class="mat-input-element mt-2"
+                    maxlength="7">
+            </mat-form-field>
+
+
+            <div class="w-full mb-4">
+                <mat-label class="block text-typography-primary text-sm mb-1">Saturasi: <span class="font-bold">{{
+                        saturation()
+                        }}%</span></mat-label>
+                <mat-slider style="width: 100%;" class="w-full" color="primary">
+                    <input matSliderThumb [ngModel]="saturation()" (ngModelChange)="onSaturationSliderChange($event)"
+                        aria-label="Saturasi" class="w-full">
+                </mat-slider>
+            </div>
+
+
+            <div class="w-full mb-4">
+                <mat-label class="block text-typography-primary text-sm mb-1">Keringanan: <span class="font-bold">{{
+                        lightness()
+                        }}%</span></mat-label>
+                <mat-slider style="width: 100%;" class="w-full" color="primary">
+                    <input matSliderThumb [ngModel]="lightness()" (ngModelChange)="onLightnessSliderChange($event)"
+                        aria-label="Lightness" class="w-full">
+                </mat-slider>
+            </div>
+
+            <div class="mt-8">
+                <div class="mb-5 flex items-center">
+                    <mat-slide-toggle class="mx-2 scale-90" [checked]="autoSave()"
+                        (change)="autoSave.set( $event.checked )"></mat-slide-toggle>
+                    <p>Autosave</p>
+                </div>
+                <button mat-raised-button color="primary" (click)="saveColorStateToLocalStorage()"
+                    class="btn-primary w-full flex items-center gap-3 justify-center disabled:opacity-10"
+                    [disabled]="autoSave()">
+                    <mat-icon class="scale-90">palette</mat-icon>
+                    Simpan Palet Warna
+                </button>
+            </div>
+
+            <h2 class="text-2xl font-bold mt-10 mb-4 text-typography-primary">Rekomendasi Warna</h2>
+            <div id="recommendationDisplay" class="grid grid-cols-2 gap-4">
+                @if (recommendations().length > 0) {
+                @for (rec of recommendations(); track rec.name) {
+                <div class="flex flex-col items-center p-3 rounded-lg bg-surface-primary shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                    (click)="onRecommendationClick(rec)">
+                    <div class="w-16 h-16 rounded-full border border-gray-300 mb-2" [style.background-color]="rec.hex"
+                        [title]="rec.hex.toUpperCase()"></div>
+                    <span class="text-typography-primary text-sm font-medium text-center">{{ rec.name }}</span>
+                </div>
+                }
+                } @else {
+                <div class="col-span-full text-center text-typography-secondary text-sm">
+                    Hasilkan palet untuk mendapatkan rekomendasi.
+                </div>
+                }
+            </div>
+        </div>
+
+
+        <div class="lg:col-span-2">
+            <div class="card mb-8">
+                <h2 class="text-2xl font-bold mb-6 text-typography-primary">Palet yang Dihasilkan</h2>
+                <div id="paletteDisplay"
+                    class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2">
+                    @if (getPaletteKeys(generatedPalette()).length > 0) {
+                    @for (key of getPaletteKeys(generatedPalette()); track key) {
+                    <div class="color-swatch flex-col p-2 text-center"
+                        [style.background-color]="generatedPalette()[key]"
+                        [style.color]="getTextColor(generatedPalette()[key])"
+                        [title]="'Langkah ' + key + ': ' + generatedPalette()[key].toUpperCase()"
+                        (click)="copyTextToClipboard(generatedPalette()[key].toUpperCase(), 'Warna ' + generatedPalette()[key].toUpperCase() + ' disalin!')">
+                        <span class="text-lg font-bold">{{ key }}</span>
+                        <span class="text-xs break-all">{{ generatedPalette()[key].toUpperCase() }}</span>
+                    </div>
+                    }
+                    } @else {
+                    <div class="col-span-full text-center text-typography-secondary py-8">
+                        Pilih warna dasar dan klik "Hasilkan Palet" untuk melihat hasilnya.
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="text-2xl font-bold mb-6 text-typography-primary">Pratinjau Tema Landing Page</h2>
+
+                <div id="miniLandingPagePreview" class="mini-landing-page border rounded overflow-hidden">
+                    @if (getPaletteKeys(generatedPalette()).length > 0) {
+                    <!-- Header -->
+                    <div [style.background-color]="generatedPalette()['95']"
+                        [style.border-color]="generatedPalette()['90']"
+                        class="flex justify-between items-center px-4 py-3 border-b">
+                        <div [style.color]="generatedPalette()['10']" class="font-bold">{{appName}}</div>
+                        <div class="space-x-4">
+                            <span [style.color]="generatedPalette()['25']" class="underline">Fitur</span>
+                            <span [style.color]="generatedPalette()['25']" class="underline">Manfaat</span>
+                        </div>
+                    </div>
+
+                    <!-- Hero -->
+                    <div [style.background-color]="generatedPalette()['98']" [style.color]="generatedPalette()['10']"
+                        class="p-6 flex justify-center">
+                        <div class="w-[70%]">
+                            <div [style.color]="generatedPalette()['50']" class="text-xl font-bold">Judul Menarik</div>
+                            <div class="text-sm mt-2">Slogan yang informatif di sini.</div>
+                            <button [style.background-color]="generatedPalette()['50']"
+                                [style.color]="generatedPalette()['99']"
+                                class="mt-4 px-6 py-2 rounded hover:opacity-90 transition">
+                                Tombol Utama
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Section -->
+                    <div [style.background-color]="generatedPalette()['96']" class="p-6 flex justify-center">
+                        <div class="w-[90%] md:w-[70%]">
+                            <div [style.color]="generatedPalette()['50']" class="text-center font-semibold mb-3">Fitur
+                                Utama</div>
+                            <div class="flex flex-col lg:flex-row justify-between gap-3">
+                                <div [style.background-color]="generatedPalette()['90']" class="w-full rounded-md p-3 ">
+                                    <span [style.color]="generatedPalette()['10']"
+                                        class="flex items-center mb-2 justify-center font-bold">
+                                        <mat-icon class="text-sm mr-1 !w-4 !h-4 !text-base leading-none">
+                                            workspace_premium
+                                        </mat-icon>
+                                        Fitur 1
+                                    </span>
+                                    <span [style.color]="generatedPalette()['10']">
+                                        Silakan masukkan detail lengkap mengenai fitur utama yang akan dijelaskan di
+                                        sini. Pastikan untuk mencakup fungsi inti dari fitur ini, bagaimana cara
+                                        kerjanya secara sederhana.
+                                    </span>
+                                </div>
+                                <div [style.background-color]="generatedPalette()['90']" class="w-full rounded-md p-3 ">
+                                    <span [style.color]="generatedPalette()['10']"
+                                        class="flex items-center mb-2 justify-center font-bold">
+                                        <mat-icon class="text-sm mr-1 !w-4 !h-4 !text-base leading-none">
+                                            workspace_premium
+                                        </mat-icon>
+                                        Fitur 2
+                                    </span>
+                                    <span [style.color]="generatedPalette()['10']">
+                                        Silakan masukkan detail lengkap mengenai fitur utama yang akan dijelaskan di
+                                        sini. Pastikan untuk mencakup fungsi inti dari fitur ini, bagaimana cara
+                                        kerjanya secara sederhana.
+                                    </span>
+                                </div>
+                                <div [style.background-color]="generatedPalette()['90']" class="w-full rounded-md p-3 ">
+                                    <span [style.color]="generatedPalette()['10']"
+                                        class="flex items-center mb-2 justify-center font-bold">
+                                        <mat-icon class="text-sm mr-1 !w-4 !h-4 !text-base leading-none">
+                                            workspace_premium
+                                        </mat-icon>
+                                        Fitur 3
+                                    </span>
+                                    <span [style.color]="generatedPalette()['10']">
+                                        Silakan masukkan detail lengkap mengenai fitur utama yang akan dijelaskan di
+                                        sini. Pastikan untuk mencakup fungsi inti dari fitur ini, bagaimana cara
+                                        kerjanya secara sederhana.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div [style.background-color]="generatedPalette()['10']" [style.color]="generatedPalette()['90']"
+                        [style.border-color]="generatedPalette()['10']" class="border-t px-4 py-3 text-center text-sm">
+                        &copy; {{currentYear}} {{appName}}
+                    </div>
+                    } @else {
+                    <div class="text-center text-typography-secondary py-8">
+                        Hasilkan palet untuk melihat pratinjau tema Anda.
+                    </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card mb-8">
+                <h3 class="text-xl font-bold mb-4 text-typography-primary">Kode Palet (Sass/SCSS)</h3>
+                <div class="relative">
+                    <pre #codeOutput class="code-output">{{ sassCodeOutput() }}</pre>
+                    <button (click)="copyCode()" class="absolute top-3 right-3 btn-primary">
+                        <mat-icon class="align-middle text-base !w-5 !h-5 !text-lg leading-none">content_copy</mat-icon>
+                        Salin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

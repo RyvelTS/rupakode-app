@@ -1,0 +1,37 @@
+<nav class="container mx-auto flex justify-between items-center">
+    <p class="text-lg text-brand-primary font-bold">{{applicationName}}</p>
+    <div class="flex items-center justify-center gap-5 max-md:gap-12">
+        <a [routerLink]="['/']" routerLinkActive="text-brand-primary underline"
+            [routerLinkActiveOptions]="{exact: true}" class="flex items-center gap-2">
+            <mat-icon>home</mat-icon>
+            <span class="max-md:hidden">Beranda</span>
+        </a>
+        <a [routerLink]="['/color-palette']" routerLinkActive="text-brand-primary underline"
+            [routerLinkActiveOptions]="{exact: true}" class="flex items-center gap-2">
+            <mat-icon>palette</mat-icon>
+            <span class="max-md:hidden">Palet Warna</span>
+        </a>
+        <a [routerLink]="['/git-message']" routerLinkActive="text-brand-primary underline"
+            [routerLinkActiveOptions]="{exact: true}" class="flex items-center gap-2">
+            <mat-icon>message</mat-icon>
+            <span class="max-md:hidden">Pesan Git</span>
+        </a>
+    </div>
+    <div>
+        <button matIconButton (click)="toggleMode()" class="text-typography-primary" aria-label="ui mode toggle">
+            <mat-icon>
+                @switch (uiService.activePreference()) {
+                @case ('dark') {
+                dark_mode
+                }
+                @case ('light') {
+                light_mode
+                }
+                @default {
+                monitor
+                }
+                }
+            </mat-icon>
+        </button>
+    </div>
+</nav>
