@@ -8,12 +8,10 @@
         pesan yang dihasilkan!
     </p>
 
-    @if (message()) {
     <div #messageBox [class.show]="message()" [class.error]="message()?.type === 'error'"
-        [class.success]="message()?.type === 'success'" class="card message-box mb-8 p-4 md:p-6">
+        [class.success]="message()?.type === 'success'" class="card min-h-[6rem] mb-8">
         <p class="text-lg text-center max-w-full">{{ message()?.text }}</p>
     </div>
-    }
 
     <div class="mb-4 grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
         <div class="lg:col-span-1 card">

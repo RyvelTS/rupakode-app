@@ -7,12 +7,10 @@
         dasar Anda!
     </p>
 
-    @if (message()) {
     <div #messageBox [class.show]="message()" [class.error]="message()?.type === 'error'"
         class="card min-h-[6rem] mb-8">
         <p class="text-lg text-center max-w-full">{{ message()?.text }}</p>
     </div>
-    }
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div class="lg:col-span-1 card">
