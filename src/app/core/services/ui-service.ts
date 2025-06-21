@@ -1,7 +1,13 @@
+/**
+ * @fileoverview UIService class for managing user interface preferences.
+ */
 import { DOCUMENT, Inject, Injectable, OnDestroy, PLATFORM_ID, Renderer2, RendererFactory2, signal } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
 import { isPlatformBrowser } from '@angular/common';
 
+/**
+ * Types for mode preferences and available themes.
+ */
 export type ModePreference = 'light' | 'dark' | 'system';
 export type ThemeName = 'stoneGray' | 'casbahRock' | 'forestGreen';
 
@@ -18,7 +24,6 @@ export class UiService {
   public readonly activeTheme = this._activeTheme.asReadonly();
   private _activePreference = signal<ModePreference>('system');
   public readonly activePreference = this._activePreference.asReadonly();
-
   private prefersColorSchemeChangeListener: ((this: MediaQueryList, ev: MediaQueryListEvent) => any) | undefined;
 
   private static readonly VALID_MODES = new Set<ModePreference>(['light', 'dark', 'system']);
@@ -42,12 +47,18 @@ export class UiService {
     }
   }
 
+  /**
+   * Cleanup function called when the UiService is destroyed.
+   */
   ngOnDestroy(): void {
     if (this.isBrowser && this.colorSchemeDarkQuery && this.prefersColorSchemeChangeListener) {
       this.colorSchemeDarkQuery.removeEventListener('change', this.prefersColorSchemeChangeListener);
     }
   }
 
+  /**
+   * Initializes the theme based on stored preferences.
+   */
   public initializeTheme(): void {
     if (!this.isBrowser) return;
 
@@ -57,6 +68,11 @@ export class UiService {
     this.activateMode(storedPreference)
   }
 
+  /**
+   * Activates the specified mode on the current document element.
+   *
+   * @param preference The mode preference to apply ('light', 'dark', or 'system').
+   */
   private activateMode(preference: ModePreference): void {
     this._activePreference.set(preference);
     let mode: Exclude<ModePreference, 'system'>;
@@ -71,16 +87,27 @@ export class UiService {
     this.renderer.setAttribute(this.document.documentElement, 'data-mode', mode);
   }
 
+  /**
+   * Activates a specified theme on the current document element.
+   *
+   * @param theme The theme name to apply.
+   */
   private activateTheme(theme: ThemeName) {
     this._activeTheme.set(theme);
     this.storeThemePreference(theme);
     this.renderer.setAttribute(this.document.documentElement, 'data-theme', theme);
   }
 
+  /**
+   * Handles changes in client's color scheme preference.
+   */
   private handleColorSchemeChange(): void {
     this.activateMode(this._activePreference());
   }
 
+  /**
+   * Toggles between current mode preference and the next valid one.
+   */
   public toggleMode(): void {
     const currentPreference = this._activePreference();
     const cycle: ModePreference[] = ['system', 'light', 'dark'];
@@ -89,6 +116,9 @@ export class UiService {
     this.activateMode(nextPreference);
   }
 
+  /**
+   * Toggles between current theme and the next valid one.
+   */
   public toggleTheme(): void {
     const currentTheme = this._activeTheme();
     const cycle: ThemeName[] = ['stoneGray', 'casbahRock', 'forestGreen'];
@@ -97,12 +127,23 @@ export class UiService {
     this.activateTheme(nextTheme);
   }
 
+  /**
+   * Stores the provided theme in the browser's local storage.
+   *
+   * @param theme The theme name to store.
+   */
   private storeThemePreference(theme: ThemeName): void {
     if (!this.isBrowser) return;
 
     localStorage.setItem(UiService.THEME_STORAGE_KEY, theme);
   }
 
+  /**
+   * Retrieves the previously stored theme preference from local storage.
+   * If no preference is stored, it returns a default theme.
+   *
+   * @returns The stored theme name or a default one if not stored.
+   */
   private getStoredThemePreference(): ThemeName {
     const defaultTheme: ThemeName = 'stoneGray';
     if (!this.isBrowser) return defaultTheme;
@@ -113,12 +154,23 @@ export class UiService {
       : defaultTheme;
   }
 
+  /**
+   * Stores the provided mode preference in the browser's local storage.
+   *
+   * @param mode The mode preference to store.
+   */
   private storeModePreference(mode: ModePreference): void {
     if (!this.isBrowser) return;
 
     localStorage.setItem(UiService.MODE_STORAGE_KEY, mode);
   }
 
+  /**
+   * Retrieves the previously stored mode preference from local storage.
+   * If no preference is stored, it returns a default mode.
+   *
+   * @returns The stored mode preference or a default one if not stored.
+   */
   private getStoredModePreference(): ModePreference {
     const defaultMode: ModePreference = 'system';
     if (!this.isBrowser) return defaultMode;

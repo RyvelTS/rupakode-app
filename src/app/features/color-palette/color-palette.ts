@@ -1,3 +1,11 @@
+/**
+ * @fileoverview Component for generating and displaying Material Design-like color palettes.
+ *
+ * It includes features for selecting a base color, adjusting saturation and lightness,
+ * viewing color recommendations, generating Sass/SCSS code, and copying the generated code to the clipboard.
+ *
+ * Preferred use: Applied to a template for interactive color scheme creation.
+ */
 import { Component, OnInit, ViewChild, ElementRef, signal, effect, AfterViewInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
@@ -14,7 +22,7 @@ import { environment } from '../../../environments/environment.development';
   templateUrl: './color-palette.html',
   styleUrl: './color-palette.scss'
 })
-export class ColorPalette implements OnInit, AfterViewInit {
+export class ColorPalette implements OnInit {
   appName = environment.appName;
   readonly currentYear: number = new Date().getFullYear();
   baseColorHex = signal<string>('#3b82f6');
@@ -27,15 +35,11 @@ export class ColorPalette implements OnInit, AfterViewInit {
   sassCodeOutput = signal<string>('/* Palet belum dihasilkan */');
 
   message = signal<{ text: string, type: string } | null>(null);
-
   @ViewChild('codeOutput') codeOutputRef!: ElementRef<HTMLPreElement>;
   @ViewChild('messageBox') messageBoxRef!: ElementRef<HTMLDivElement>;
 
   constructor() {
-
-
     effect(() => {
-
       if (this.baseColorHex() && this.saturation() !== null && this.lightness() !== null) {
         this.performGeneration();
         if (this.autoSave()) this.saveColorStateToLocalStorage();
@@ -45,13 +49,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.loadColorStateFromLocalStorage();
-  }
-
-  ngAfterViewInit(): void {
-
-
-
-
   }
 
   /**
@@ -187,12 +184,8 @@ export class ColorPalette implements OnInit, AfterViewInit {
       l: targetLightness / 100
     };
 
-
     const steps = [0, 10, 20, 25, 30, 35, 40, 50, 60, 70, 80, 90, 95, 98, 99, 100];
-
     const primarySteps = [4, 6, 12, 17, 22, 24, 87, 92, 94, 96];
-
-
     steps.forEach(step => {
       let l_adjusted: number;
 
@@ -210,7 +203,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
       palette[step] = this.rgbToHex(rgb.r, rgb.g, rgb.b);
     });
 
-
     primarySteps.forEach(step => {
       if (!palette[step]) {
         let l_adjusted: number;
@@ -224,7 +216,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
         palette[step] = this.rgbToHex(rgb.r, rgb.g, rgb.b);
       }
     });
-
 
     const sortedPalette: { [key: number]: string } = {};
     Object.keys(palette).sort((a, b) => parseInt(a) - parseInt(b)).forEach(key => {
@@ -256,7 +247,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
     return '#000000';
   }
 
-
   /**
    * Generates color recommendations based on the generated palettes and the base HSL color.
    * This function ensures recommendations are consistent with the overall palette generation.
@@ -283,8 +273,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
     currentLightness: number
   ): any[] {
     const recommendations = [];
-
-
     recommendations.push({
       name: "Warna Utama",
       hex: this.getRepresentativeShade(primaryPalette, 50)
@@ -300,7 +288,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
       hex: this.getRepresentativeShade(tertiaryPalette, 50)
     });
 
-
     recommendations.push({
       name: "Warna Netral (Terang)",
       hex: this.getRepresentativeShade(neutralPalette, 95)
@@ -311,15 +298,12 @@ export class ColorPalette implements OnInit, AfterViewInit {
       hex: this.getRepresentativeShade(neutralVariantPalette, 10)
     });
 
-
     const complementaryHue = (baseHsl.h + 0.5) % 1;
     const compRgb = this.hslToRgb(complementaryHue, currentSaturation / 100, currentLightness / 100);
     recommendations.push({
       name: "Warna Komplementer",
       hex: this.rgbToHex(compRgb.r, compRgb.g, compRgb.b)
     });
-
-
 
     const accentHue = (baseHsl.h * 360 + 300) % 360 / 360;
     const accentSaturation = Math.min(1, (currentSaturation / 100) * 1.2);
@@ -329,7 +313,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
       name: "Warna Aksen",
       hex: this.rgbToHex(accentRgb.r, accentRgb.g, accentRgb.b)
     });
-
 
     recommendations.push({
       name: "Warna Error",
@@ -368,7 +351,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
     sassCode += formatPalette('neutral', neutralPalette);
     sassCode += formatPalette('neutral-variant', neutralVariantPalette);
     sassCode += formatPalette('error', errorPalette);
-
     sassCode += `);\n`;
 
     return sassCode;
@@ -382,8 +364,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
     const baseHex = this.baseColorHex();
     const currentSaturation = this.saturation();
     const currentLightness = this.lightness();
-
-
     if (!baseHex || !/^#[0-9A-Fa-f]{6}$/.test(baseHex)) {
       this.showMessage('Harap masukkan warna dasar HEX yang valid (contoh: #3B82F6).', 'error');
       return;
@@ -394,37 +374,23 @@ export class ColorPalette implements OnInit, AfterViewInit {
       this.showMessage('Gagal mengurai warna HEX dasar.', 'error');
       return;
     }
+
     const baseHsl = this.rgbToHsl(baseRgb.r, baseRgb.g, baseRgb.b);
-
-
     const primaryPalette = this.generateMaterialPalette(baseHex, currentSaturation, currentLightness);
-
-
-
-
-
-
 
     const secondaryHue = (baseHsl.h * 360 + 60) % 360 / 360;
     const secondaryBaseHex = this.rgbToHex(this.hslToRgb(secondaryHue, currentSaturation / 100, currentLightness / 100).r, this.hslToRgb(secondaryHue, currentSaturation / 100, currentLightness / 100).g, this.hslToRgb(secondaryHue, currentSaturation / 100, currentLightness / 100).b);
     const secondaryPalette = this.generateMaterialPalette(secondaryBaseHex, currentSaturation, currentLightness);
 
-
     const tertiaryHue = (baseHsl.h * 360 + 120) % 360 / 360;
     const tertiaryBaseHex = this.rgbToHex(this.hslToRgb(tertiaryHue, currentSaturation / 100, currentLightness / 100).r, this.hslToRgb(tertiaryHue, currentSaturation / 100, currentLightness / 100).g, this.hslToRgb(tertiaryHue, currentSaturation / 100, currentLightness / 100).b);
     const tertiaryPalette = this.generateMaterialPalette(tertiaryBaseHex, currentSaturation, currentLightness);
 
-
     const neutralBaseHex = this.rgbToHex(this.hslToRgb(baseHsl.h, 0.15, 0.60).r, this.hslToRgb(baseHsl.h, 0.15, 0.60).g, this.hslToRgb(baseHsl.h, 0.15, 0.60).b);
     const neutralPalette = this.generateMaterialPalette(neutralBaseHex, 15, 60);
-
-
     const neutralVariantBaseHex = this.rgbToHex(this.hslToRgb(baseHsl.h, 0.20, 0.45).r, this.hslToRgb(baseHsl.h, 0.20, 0.45).g, this.hslToRgb(baseHsl.h, 0.20, 0.45).b);
     const neutralVariantPalette = this.generateMaterialPalette(neutralVariantBaseHex, 20, 45);
-
-
     const errorPalette = this.generateMaterialPalette("#B00020", 80, 55);
-
 
     this.generatedPalette.set(primaryPalette);
     this.recommendations.set(this.generateRecommendations(
@@ -438,8 +404,8 @@ export class ColorPalette implements OnInit, AfterViewInit {
       currentSaturation,
       currentLightness
     ));
-    this.sassCodeOutput.set(this.generateSassCode(primaryPalette, secondaryPalette, tertiaryPalette, neutralPalette, neutralVariantPalette, errorPalette));
 
+    this.sassCodeOutput.set(this.generateSassCode(primaryPalette, secondaryPalette, tertiaryPalette, neutralPalette, neutralVariantPalette, errorPalette));
     this.showMessage('Palet warna dan rekomendasi berhasil dihasilkan!', 'success');
   }
 
@@ -461,7 +427,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
   onHexInputChanged(value: string): void {
     const cleanedHex = value.startsWith('#') ? value.substring(1) : value;
     let finalHex = '';
-
     if (/^[0-9A-Fa-f]{6}$/.test(cleanedHex)) {
       finalHex = '#' + cleanedHex;
     }
@@ -469,9 +434,9 @@ export class ColorPalette implements OnInit, AfterViewInit {
     else if (/^[0-9A-Fa-f]{3}$/.test(cleanedHex)) {
       finalHex = '#' + cleanedHex[0] + cleanedHex[0] + cleanedHex[1] + cleanedHex[1] + cleanedHex[2] + cleanedHex[2];
     } else {
-
       return;
     }
+
     this.baseColorHex.set(finalHex.toUpperCase());
   }
 
@@ -482,7 +447,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
    */
   onSaturationSliderChange(value: number): void {
     this.saturation.set(value);
-
 
     const currentRgb = this.hexToRgb(this.baseColorHex());
     if (currentRgb) {
@@ -501,7 +465,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
   onLightnessSliderChange(value: number): void {
     this.lightness.set(value);
 
-
     const currentRgb = this.hexToRgb(this.baseColorHex());
     if (currentRgb) {
       const currentHsl = this.rgbToHsl(currentRgb.r, currentRgb.g, currentRgb.b);
@@ -518,8 +481,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
    */
   onRecommendationClick(rec: any): void {
     this.baseColorHex.set(rec.hex.toUpperCase());
-
-
     const newRgb = this.hexToRgb(rec.hex);
     if (!newRgb) return;
     const newHsl = this.rgbToHsl(newRgb.r, newRgb.g, newRgb.b);
@@ -562,8 +523,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
           this.showMessage('Gagal menyalin teks.', 'error');
         });
     } else {
-
-
       this.showMessage('Browser Anda tidak mendukung penyalinan ke clipboard secara langsung.', 'error');
     }
   }
@@ -588,7 +547,6 @@ export class ColorPalette implements OnInit, AfterViewInit {
     if (!rgb) return '#333';
 
     const luminance = (0.2126 * (rgb.r / 255) + 0.7152 * (rgb.g / 255) + 0.0722 * (rgb.b / 255));
-
     return luminance > 0.5 ? '#333' : '#fff';
   }
 

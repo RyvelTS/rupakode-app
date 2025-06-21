@@ -1,4 +1,15 @@
-// src/app/conventional-commit-message/conventional-commit-message.component.ts
+/**
+ * @fileoverview Component for creating and managing conventional commit messages.
+ *
+ * This component uses Material Design components for input and interaction.
+ * It facilitates generating and storing commit messages adhering to a convention,
+ * supporting features such as commit type selection, footer addition, saving messages locally,
+ * and displaying message previews.
+ *
+ * Preferred use: Include in templates where conventional commit message creation
+ * is necessary, such as in Git workflows or build tools.
+ */
+
 import { Component, OnInit, signal, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
@@ -10,18 +21,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 
-// Definisi Interface untuk Footer
 interface CommitFooter {
   id: number;
   token: string;
   value: string;
 }
 
-// NEW: Interface for Saved Commit Messages
 interface SavedCommitMessage {
-  id: string; // Unique ID for each saved message (UUID or timestamp)
-  message: string; // The generated commit message
-  // Optionally, you can save the full form state to reload accurately
+  id: string;
+  message: string;
   type: string;
   scope: string;
   description: string;
@@ -50,8 +58,6 @@ interface SavedCommitMessage {
   styleUrls: ['./conventional-commit-message.scss']
 })
 export class ConventionalCommitMessage implements OnInit {
-
-  // --- Signals untuk mengelola state form inputs ---
   type = signal<string>('feat');
   scope = signal<string>('');
   description = signal<string>('');
@@ -62,13 +68,11 @@ export class ConventionalCommitMessage implements OnInit {
   footers = signal<CommitFooter[]>([]);
   nextFooterId = signal<number>(0);
 
-  // --- Signal untuk output dan pesan ---
   commitMessagePreview = signal<string>('');
   message = signal<{ text: string, type: 'success' | 'error' } | null>(null);
 
-  // NEW: Signal for saved commit messages
   savedCommitMessages = signal<SavedCommitMessage[]>([]);
-  private readonly LOCAL_STORAGE_KEY = 'savedCommitMessages'; // Key for local storage
+  private readonly LOCAL_STORAGE_KEY = 'savedCommitMessages';
 
   constructor() {
     effect(() => {
@@ -76,13 +80,17 @@ export class ConventionalCommitMessage implements OnInit {
     }, { allowSignalWrites: true });
   }
 
+  /**
+   * Component lifecycle method to initiate loading saved commit messages.
+   */
   ngOnInit(): void {
-    // NEW: Load saved messages when the component initializes
     this.loadSavedCommitMessages();
   }
 
-  // --- Core Logic ---
-
+  /**
+   * Generates the complete commit message from the current state of the component.
+   * Builds the header, body, and footers, considering potential breaking changes.
+   */
   generateCommitMessage(): void {
     const type = this.type();
     const scope = this.scope().trim();
@@ -96,25 +104,23 @@ export class ConventionalCommitMessage implements OnInit {
     if (scope) {
       header += `(${scope})`;
     }
+
     if (isBreaking && breakingIndicator === 'bang') {
       header += '!';
     }
+
     header += `: ${description}`;
-
     let messageParts: string[] = [header];
-
     if (body) {
-      messageParts.push(''); // Baris kosong sebelum body
+      messageParts.push('');
       messageParts.push(body);
     }
 
     const commitFooters: string[] = [];
-    // Tambahkan footer breaking change jika berlaku
     if (isBreaking && breakingIndicator === 'footer' && breakingDesc) {
       commitFooters.push(`BREAKING CHANGE: ${breakingDesc}`);
     }
 
-    // Tambahkan footer dinamis
     this.footers().forEach(footer => {
       if (footer.token.trim() && footer.value.trim()) {
         commitFooters.push(`${footer.token.trim()}: ${footer.value.trim()}`);
@@ -122,27 +128,40 @@ export class ConventionalCommitMessage implements OnInit {
     });
 
     if (commitFooters.length > 0) {
-      messageParts.push(''); // Baris kosong sebelum footers
+      messageParts.push('');
       messageParts.push(...commitFooters);
     }
 
     this.commitMessagePreview.set(messageParts.join('\n'));
   }
 
+  /**
+   * Adds a new editable footer item to the commit message.
+   */
   addFooter(): void {
     this.footers.update(currentFooters => [
       ...currentFooters,
       { id: this.nextFooterId(), token: '', value: '' }
     ]);
+
     this.nextFooterId.update(id => id + 1);
   }
 
+  /**
+   * Removes a footer item from the commit message based on its ID.
+   * @param idToRemove The ID of the footer to be removed.
+   */
   removeFooter(idToRemove: number): void {
     this.footers.update(currentFooters =>
       currentFooters.filter(footer => footer.id !== idToRemove)
     );
   }
 
+  /**
+   * Updates the token (e.g., 'lemsreq', 'type') of an existing footer item.
+   * @param id The ID of the footer to update.
+   * @param value The new token value.
+   */
   updateFooterToken(id: number, value: string): void {
     this.footers.update(currentFooters =>
       currentFooters.map(footer =>
@@ -151,6 +170,11 @@ export class ConventionalCommitMessage implements OnInit {
     );
   }
 
+  /**
+   * Updates the value (e.g., description, notes) of an existing footer item.
+   * @param id The ID of the footer to update.
+   * @param value The new value for the footer.
+   */
   updateFooterValue(id: number, value: string): void {
     this.footers.update(currentFooters =>
       currentFooters.map(footer =>
@@ -159,13 +183,17 @@ export class ConventionalCommitMessage implements OnInit {
     );
   }
 
-  // --- NEW: Local Storage Functionality ---
-
-  // Generate a simple unique ID for saved messages
+  /**
+   * Generates a unique identifier for a new commit message entry.
+   * @returns A unique string.
+   */
   private generateUniqueId(): string {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
   }
 
+  /**
+   * Saves the current commit message to local storage.
+   */
   saveCommitMessage(): void {
     const currentMessage: SavedCommitMessage = {
       id: this.generateUniqueId(),
@@ -177,7 +205,7 @@ export class ConventionalCommitMessage implements OnInit {
       isBreakingChange: this.isBreakingChange(),
       breakingChangeIndicator: this.breakingChangeIndicator(),
       breakingChangeDescription: this.breakingChangeDescription(),
-      footers: this.footers().map(f => ({ ...f })) // Deep copy footers
+      footers: this.footers().map(f => ({ ...f }))
     };
 
     if (!currentMessage.message.trim()) {
@@ -193,6 +221,9 @@ export class ConventionalCommitMessage implements OnInit {
     this.showMessage('Pesan commit berhasil disimpan!', 'success');
   }
 
+  /**
+   * Loads saved commit messages from local storage.
+   */
   loadSavedCommitMessages(): void {
     try {
       const storedMessages = localStorage.getItem(this.LOCAL_STORAGE_KEY);
@@ -206,6 +237,11 @@ export class ConventionalCommitMessage implements OnInit {
     }
   }
 
+  /**
+   * Loads a specific commit message by its ID from saved messages.
+   * Fills the component state with the loaded message data.
+   * @param idToLoad The unique ID of the commit message to load.
+   */
   loadCommitMessage(idToLoad: string): void {
     const messageToLoad = this.savedCommitMessages().find(msg => msg.id === idToLoad);
     if (messageToLoad) {
@@ -216,9 +252,9 @@ export class ConventionalCommitMessage implements OnInit {
       this.isBreakingChange.set(messageToLoad.isBreakingChange);
       this.breakingChangeIndicator.set(messageToLoad.breakingChangeIndicator);
       this.breakingChangeDescription.set(messageToLoad.breakingChangeDescription);
-      // Ensure footers are deep copied to avoid mutation issues
+
       this.footers.set(messageToLoad.footers.map(f => ({ ...f })));
-      // Reset nextFooterId based on loaded footers to prevent ID collisions on new adds
+
       const maxFooterId = messageToLoad.footers.reduce((max, f) => Math.max(max, f.id), -1);
       this.nextFooterId.set(maxFooterId + 1);
 
@@ -228,6 +264,10 @@ export class ConventionalCommitMessage implements OnInit {
     }
   }
 
+  /**
+   * Removes a saved commit message from local storage.
+   * @param idToRemove The unique ID of the commit message to remove.
+   */
   removeSavedCommitMessage(idToRemove: string): void {
     this.savedCommitMessages.update(messages => {
       const updatedMessages = messages.filter(msg => msg.id !== idToRemove);
@@ -237,8 +277,9 @@ export class ConventionalCommitMessage implements OnInit {
     this.showMessage('Pesan commit berhasil dihapus!', 'success');
   }
 
-  // --- Utility Functions ---
-
+  /**
+   * Copies the current commit message preview to the clipboard.
+   */
   copyToClipboard(): void {
     const textToCopy = this.commitMessagePreview();
     if (!textToCopy) {
@@ -254,6 +295,9 @@ export class ConventionalCommitMessage implements OnInit {
       });
   }
 
+  /**
+   * Resets all form fields to their default states.
+   */
   clearForm(): void {
     this.type.set('feat');
     this.scope.set('');
@@ -267,6 +311,11 @@ export class ConventionalCommitMessage implements OnInit {
     this.showMessage('Formulir berhasil dihapus!', 'success');
   }
 
+  /**
+   * Displays a temporary message indicating success or error.
+   * @param text The message to display.
+   * @param type Either 'success' or 'error' that dictates the styling.
+   */
   showMessage(text: string, type: 'success' | 'error'): void {
     this.message.set({ text, type });
     setTimeout(() => {
