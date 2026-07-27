@@ -19,7 +19,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { CommonModule } from '@angular/common';
+
 
 interface CommitFooter {
   id: number;
@@ -51,9 +51,8 @@ interface SavedCommitMessage {
     MatCheckboxModule,
     MatRadioModule,
     MatButtonModule,
-    MatIconModule,
-    CommonModule
-  ],
+    MatIconModule
+],
   templateUrl: './conventional-commit-message.html',
   styleUrls: ['./conventional-commit-message.scss']
 })
