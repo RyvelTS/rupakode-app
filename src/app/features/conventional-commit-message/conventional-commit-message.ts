@@ -10,7 +10,7 @@
  * is necessary, such as in Git workflows or build tools.
  */
 
-import { Component, OnInit, signal, effect } from '@angular/core';
+import { Component, OnInit, signal, effect, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
@@ -19,6 +19,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { isPlatformBrowser } from '@angular/common';
 
 
 interface CommitFooter {
@@ -57,6 +58,8 @@ interface SavedCommitMessage {
   styleUrls: ['./conventional-commit-message.scss']
 })
 export class ConventionalCommitMessage implements OnInit {
+  private isBrowser: boolean;
+
   type = signal<string>('feat');
   scope = signal<string>('');
   description = signal<string>('');
@@ -73,10 +76,12 @@ export class ConventionalCommitMessage implements OnInit {
   savedCommitMessages = signal<SavedCommitMessage[]>([]);
   private readonly LOCAL_STORAGE_KEY = 'savedCommitMessages';
 
-  constructor() {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+
     effect(() => {
       this.generateCommitMessage();
-    }, { allowSignalWrites: true });
+    });
   }
 
   /**
@@ -214,7 +219,9 @@ export class ConventionalCommitMessage implements OnInit {
 
     this.savedCommitMessages.update(messages => {
       const updatedMessages = [...messages, currentMessage];
-      localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(updatedMessages));
+      if (this.isBrowser) {
+        localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(updatedMessages));
+      }
       return updatedMessages;
     });
     this.showMessage('Pesan commit berhasil disimpan!', 'success');
@@ -224,6 +231,8 @@ export class ConventionalCommitMessage implements OnInit {
    * Loads saved commit messages from local storage.
    */
   loadSavedCommitMessages(): void {
+    if (!this.isBrowser) return;
+
     try {
       const storedMessages = localStorage.getItem(this.LOCAL_STORAGE_KEY);
       if (storedMessages) {
@@ -270,7 +279,9 @@ export class ConventionalCommitMessage implements OnInit {
   removeSavedCommitMessage(idToRemove: string): void {
     this.savedCommitMessages.update(messages => {
       const updatedMessages = messages.filter(msg => msg.id !== idToRemove);
-      localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(updatedMessages));
+      if (this.isBrowser) {
+        localStorage.setItem(this.LOCAL_STORAGE_KEY, JSON.stringify(updatedMessages));
+      }
       return updatedMessages;
     });
     this.showMessage('Pesan commit berhasil dihapus!', 'success');

@@ -6,13 +6,14 @@
  *
  * Preferred use: Applied to a template for interactive color scheme creation.
  */
-import { Component, OnInit, ViewChild, ElementRef, signal, effect, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, signal, effect, AfterViewInit, Inject, PLATFORM_ID } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { isPlatformBrowser } from '@angular/common';
 import { environment } from '../../../environments/environment.development';
 
 @Component({
@@ -23,6 +24,8 @@ import { environment } from '../../../environments/environment.development';
   styleUrl: './color-palette.scss'
 })
 export class ColorPalette implements OnInit {
+  private isBrowser: boolean;
+
   appName = environment.appName;
   readonly currentYear: number = new Date().getFullYear();
   baseColorHex = signal<string>('#3b82f6');
@@ -38,7 +41,9 @@ export class ColorPalette implements OnInit {
   @ViewChild('codeOutput') codeOutputRef!: ElementRef<HTMLPreElement>;
   @ViewChild('messageBox') messageBoxRef!: ElementRef<HTMLDivElement>;
 
-  constructor() {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object) {
+    this.isBrowser = isPlatformBrowser(this.platformId);
+
     effect(() => {
       if (this.baseColorHex() && this.saturation() !== null && this.lightness() !== null) {
         this.performGeneration();
@@ -554,6 +559,8 @@ export class ColorPalette implements OnInit {
    * Saves the current color state (base hex, saturation, lightness) to local storage.
    */
   protected saveColorStateToLocalStorage(): void {
+    if (!this.isBrowser) return;
+
     try {
       const colorState = {
         baseColorHex: this.baseColorHex(),
@@ -572,6 +579,8 @@ export class ColorPalette implements OnInit {
    * If no state is found, it uses the default initial values.
    */
   private loadColorStateFromLocalStorage(): void {
+    if (!this.isBrowser) return;
+
     try {
       const savedState = localStorage.getItem('colorPaletteState');
       if (savedState) {
